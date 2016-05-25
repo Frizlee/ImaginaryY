@@ -238,3 +238,7 @@ _Pvt_Extensions
 # dependencies
 dependencies/
 
+# data files
+*.png
+*.ttf
+
