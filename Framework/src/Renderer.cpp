@@ -1,4 +1,5 @@
 #include "../include/Renderer.hpp"
+using namespace std;
 
 Renderer::Renderer() :
 	mInitialized{ false }
@@ -22,8 +23,23 @@ void Renderer::bindShader(Shader &shr)
 
 void Renderer::bindTexture(Texture &tex, int32_t slot)
 {
+	GLenum target;
+	
+	switch (tex.mType)
+	{
+	case Texture::Type::COMPRESSED_2D:
+	case Texture::Type::UNCOMPRESSED_2D:
+		target = gl::TEXTURE_2D;
+		break;
+
+	case Texture::Type::COMPRESSED_2D_ARRAY:
+	case Texture::Type::UNCOMPRESSED_2D_ARRAY:
+		target = gl::TEXTURE_2D_ARRAY;
+		break;
+	}
+
 	gl::ActiveTexture(gl::TEXTURE0 + slot);
-	gl::BindTexture(gl::TEXTURE_2D, tex.mID);
+	gl::BindTexture(target, tex.mID);
 }
 
 void Renderer::setDepthTest(bool state)

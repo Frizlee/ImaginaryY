@@ -1,9 +1,9 @@
 #ifndef RENDERER_HPP
 #define RENDERER_HPP
+#include "Prerequisites.hpp"
 #include "gl_core_3_3.hpp"
 #include "Shader.hpp"
 #include "Texture.hpp"
-#include <cstdint>
 
 class Renderer
 {

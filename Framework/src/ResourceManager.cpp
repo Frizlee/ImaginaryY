@@ -1,7 +1,6 @@
 #include "../include/ResourceManager.hpp"
 #include "../include/DdsCodec.hpp"
 #include "../include/PngCodec.hpp"
-#include <fstream>
 using namespace std;
 
 

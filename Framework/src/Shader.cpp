@@ -1,12 +1,13 @@
 #include "../include/Shader.hpp"
-#include <iostream>
 using namespace std;
 
 Shader::Shader()
+	: GpuResource{}
 {
 }
 
 Shader::Shader(std::string vertexShader, std::string fragmentShader)
+	: GpuResource{}
 {
 	create(vertexShader, fragmentShader);
 }
@@ -71,9 +72,14 @@ void Shader::create(std::string vertexShader, std::string fragmentShader)
 	gl::DeleteShader(fragmentShaderID);
 }
 
+void Shader::clear()
+{
+	gl::DeleteProgram(mID);
+}
+
 Shader::~Shader()
 {
-	// gl::DeleteProgram(mID);
+	clear();
 }
 
 GLint Shader::getLocation(std::string name)

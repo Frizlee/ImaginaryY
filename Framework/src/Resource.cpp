@@ -8,3 +8,4 @@ Resource::Resource()
 Resource::~Resource()
 {
 }
+

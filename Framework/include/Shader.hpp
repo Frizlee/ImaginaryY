@@ -1,9 +1,9 @@
 #ifndef SHADER_HPP
 #define SHADER_HPP
-#include "gl_core_3_3.hpp"
-#include <string>
+#include "Prerequisites.hpp"
+#include "GpuResource.hpp"
 
-class Shader
+class Shader : public GpuResource
 {
 	friend class Renderer;
 
@@ -13,12 +13,9 @@ public:
 	Shader(std::string vertexShader, std::string fragmentShader);
 	void create(std::string vertexShader, std::string fragmentShader);
 
+	void clear();
 	~Shader();
 	GLint getLocation(std::string name);
-
-	
-private:
-	GLuint mID;
 };
 
 #endif // SHADER_HPP

@@ -1,5 +1,4 @@
 #include "../include/Image.hpp"
-#include <iostream>
 using namespace std;
 
 Image::Image() 
@@ -30,7 +29,6 @@ Image& Image::operator=(Image cas)
 	mWidth = cas.mWidth;
 	mHeight = cas.mHeight;
 	mFormat = cas.mFormat;
-
 	return *this;
 }
 
@@ -40,7 +38,6 @@ Image& Image::operator=(Image &&rhs)
 	mWidth = rhs.mWidth;
 	mHeight = rhs.mHeight;
 	mFormat = rhs.mFormat;
-
 	return *this;
 }
 
@@ -56,8 +53,9 @@ Image::Image(uint32_t width, uint32_t height, Format format, std::vector<uint8_t
 	create(width, height, format, move(bytes));
 }
 
-Image::~Image()
+Image::Image(std::uint32_t width, std::uint32_t height, Format format)
 {
+	create(width, height, format);
 }
 
 void Image::create(uint32_t width, uint32_t height, Format format, const std::vector<uint8_t> &bytes)
@@ -74,6 +72,26 @@ void Image::create(uint32_t width, uint32_t height, Format format, std::vector<u
 	mHeight = height;
 	mFormat = format;
 	swap(mBytes, bytes);
+}
+
+void Image::create(std::uint32_t width, std::uint32_t height, Format format)
+{
+	mWidth = width;
+	mHeight = height;
+	mFormat = format;
+	mBytes.resize(width * height * getBytesPerPixel());
+}
+
+Image::~Image()
+{
+}
+
+void Image::clear()
+{
+	mFormat = Format::UNKNOWN;
+	mBytes.clear();
+	mWidth = 0;
+	mHeight = 0;
 }
 
 Image::Format Image::getFormat() const

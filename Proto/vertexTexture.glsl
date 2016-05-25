@@ -4,10 +4,11 @@ layout(location = 1) in vec2 uv;
 
 out vec2 interpolatedUV;
 uniform mat4 mvpMatrix;
+uniform vec2 animKey;
 
 void main()
 {
 	gl_Position = mvpMatrix * vec4(pos, 1.0f);
-	interpolatedUV = uv;	
+	interpolatedUV = uv + animKey;	
 }
 

@@ -1,7 +1,6 @@
 #ifndef GUID_GENERATOR_HPP
 #define GUID_GENERATOR_HPP
-#include <cstdint>
-#include <string>
+#include "Prerequisites.hpp"
 
 class Guid
 {

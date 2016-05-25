@@ -1,8 +1,6 @@
 #ifndef RESOURCE_MANAGER_HPP
 #define RESOURCE_MANAGER_HPP
-#include <unordered_map>
-#include <string>
-#include <memory>
+#include "Prerequisites.hpp"
 #include "Guid.hpp"
 #include "Resource.hpp"
 #include "Codec.hpp"

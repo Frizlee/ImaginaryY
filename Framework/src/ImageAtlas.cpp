@@ -36,6 +36,51 @@ ImageAtlas::ImageAtlas(uint32_t width, uint32_t height, Format format, vector<ui
 	mRoot->mRect.w = height;
 }
 
+ImageAtlas::ImageAtlas(uint32_t width, uint32_t height, Format format)
+	: Image{ width, height, format }, mRoot{ make_unique<Node>() }
+{
+	mRoot->mRect.x = 0;
+	mRoot->mRect.y = 0;
+	mRoot->mRect.z = width;
+	mRoot->mRect.w = height;
+}
+
+void ImageAtlas::create(uint32_t width, uint32_t height, Format format, const vector<uint8_t> &bytes)
+{
+	Image::create(width, height, format, bytes);
+
+	mRoot->mRect.x = 0;
+	mRoot->mRect.y = 0;
+	mRoot->mRect.z = width;
+	mRoot->mRect.w = height;
+}
+
+void ImageAtlas::create(uint32_t width, uint32_t height, Format format, vector<uint8_t> &&bytes)
+{
+	Image::create(width, height, format, move(bytes));
+
+	mRoot->mRect.x = 0;
+	mRoot->mRect.y = 0;
+	mRoot->mRect.z = width;
+	mRoot->mRect.w = height;
+}
+
+void ImageAtlas::create(std::uint32_t width, std::uint32_t height, Format format)
+{
+	Image::create(width, height, format);
+
+	mRoot->mRect.x = 0;
+	mRoot->mRect.y = 0;
+	mRoot->mRect.z = width;
+	mRoot->mRect.w = height;
+}
+
+void ImageAtlas::clear()
+{
+	mRoot.release();
+	Image::clear();
+}
+
 ImageAtlas::~ImageAtlas()
 {
 }
@@ -87,6 +132,16 @@ ImageAtlas::Node& ImageAtlas::Node::operator=(Node && rhs)
 	mFree = rhs.mFree;
 
 	return *this;
+}
+
+void * ImageAtlas::Node::operator new(size_t i)
+{
+	return _aligned_malloc(i, 16);
+}
+
+void ImageAtlas::Node::operator delete(void *p)
+{
+	_aligned_free(p);
 }
 
 ImageAtlas::Rect ImageAtlas::Node::insert(uint32_t width, uint32_t height)

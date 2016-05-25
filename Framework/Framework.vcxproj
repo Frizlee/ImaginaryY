@@ -78,11 +78,14 @@
       <AdditionalIncludeDirectories>$(SolutionDir)dependencies\include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>glfw3.lib;libpng16.lib;zlib.lib;opengl32.lib;</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;libpng16.lib;zlib.lib;opengl32.lib;freetype263.lib;Rpcrt4.lib;</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)dependencies\lib\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -106,11 +109,14 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>glfw3.lib;libpng16.lib;zlib.lib;opengl32.lib;</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;libpng16.lib;zlib.lib;opengl32.lib;freetype263.lib;Rpcrt4.lib;</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)dependencies\lib\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -127,22 +133,33 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\Codec.hpp" />
+    <ClInclude Include="include\Component.hpp" />
     <ClInclude Include="include\DdsCodec.hpp" />
+    <ClInclude Include="include\Entity.hpp" />
+    <ClInclude Include="include\Font.hpp" />
     <ClInclude Include="include\gl_core_3_3.hpp" />
+    <ClInclude Include="include\GpuResource.hpp" />
     <ClInclude Include="include\Guid.hpp" />
     <ClInclude Include="include\Image.hpp" />
     <ClInclude Include="include\ImageAtlas.hpp" />
     <ClInclude Include="include\PngCodec.hpp" />
+    <ClInclude Include="include\Prerequisites.hpp" />
     <ClInclude Include="include\Renderer.hpp" />
     <ClInclude Include="include\Resource.hpp" />
     <ClInclude Include="include\ResourceManager.hpp" />
     <ClInclude Include="include\Shader.hpp" />
+    <ClInclude Include="include\Text.hpp" />
     <ClInclude Include="include\Texture.hpp" />
+    <ClInclude Include="include\VertexLayouts.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Codec.cpp" />
+    <ClCompile Include="src\Component.cpp" />
     <ClCompile Include="src\DdsCodec.cpp" />
+    <ClCompile Include="src\Entity.cpp" />
+    <ClCompile Include="src\Font.cpp" />
     <ClCompile Include="src\gl_core_3_3.cpp" />
+    <ClCompile Include="src\GpuResource.cpp" />
     <ClCompile Include="src\Guid.cpp" />
     <ClCompile Include="src\Image.cpp" />
     <ClCompile Include="src\ImageAtlas.cpp" />
@@ -151,6 +168,7 @@
     <ClCompile Include="src\Resource.cpp" />
     <ClCompile Include="src\ResourceManager.cpp" />
     <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\Text.cpp" />
     <ClCompile Include="src\Texture.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

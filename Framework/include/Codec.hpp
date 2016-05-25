@@ -1,7 +1,6 @@
 #ifndef CODEC_HPP
 #define CODEC_HPP
-#include <memory>
-#include <iostream>
+#include "Prerequisites.hpp"
 
 class Resource;
 

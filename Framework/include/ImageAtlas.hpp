@@ -1,9 +1,8 @@
 #ifndef IMAGE_ATLAS_HPP
 #define IMAGE_ATLAS_HPP
+#include "Prerequisites.hpp"
 #include "Image.hpp"
-#include <memory>
 #include <glm/vec4.hpp>
-#include <cstdint>
 
 
 class ImageAtlas : public Image
@@ -23,9 +22,18 @@ public:
 	// Override constructors
 	ImageAtlas(std::uint32_t width, std::uint32_t height, Format format, 
 		const std::vector<uint8_t> &bytes);
+	void create(std::uint32_t width, std::uint32_t height, Format format,
+		const std::vector<std::uint8_t> &bytes);
+
 	ImageAtlas(std::uint32_t width, std::uint32_t height, Format format, 
 		std::vector<uint8_t> &&bytes);
+	void create(std::uint32_t width, std::uint32_t height, Format format,
+		std::vector<std::uint8_t> &&bytes);
 
+	ImageAtlas(std::uint32_t width, std::uint32_t height, Format format);
+	void create(std::uint32_t width, std::uint32_t height, Format format);
+
+	void clear();
 	~ImageAtlas();
 
 	Rect insert(Image &img);
@@ -43,8 +51,12 @@ private:
 		// Non copyable
 		Node(const Node &lhs) = delete;
 		Node(Node &&rhs);
-		//Node& operator=(Node cas) = delete;
+		Node& operator=(const Node &cas) = delete;
 		Node& operator=(Node &&rhs);
+
+		// Alignment warning
+		void* operator new(size_t i);
+		void operator delete(void *p);
 
 		Rect insert(std::uint32_t width, std::uint32_t height);
 	};

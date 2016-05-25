@@ -1,7 +1,5 @@
 #include "../include/Guid.hpp"
 #include <Windows.h>
-#include <sstream>
-#include <iomanip>
 using namespace std;
 
 Guid::Guid()

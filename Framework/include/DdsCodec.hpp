@@ -1,7 +1,6 @@
 #ifndef DDS_CODEC_HPP
 #define DDS_CODEC_HPP
 #include "Codec.hpp"
-#include <cstdint>
 #include "Image.hpp"
 
 class DdsCodec : public Codec

@@ -6,7 +6,7 @@ uniform sampler2D sampler1;
 
 void main()
 {
-	fragmentColor = texture(sampler1, interpolatedUV);
+	fragmentColor = texture2D(sampler1, interpolatedUV);
 	if (fragmentColor.a < 0.1)
 		discard;
 }

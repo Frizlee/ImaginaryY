@@ -1,7 +1,8 @@
 #ifndef IMAGE_HPP
 #define IMAGE_HPP
+#include "Prerequisites.hpp"
 #include "Resource.hpp"
-#include <vector>
+
 
 
 class Image : public Resource
@@ -54,17 +55,22 @@ public:
 	
 	// Copy bytes.
 	Image(std::uint32_t width, std::uint32_t height, Format format, 
-		const std::vector<uint8_t> &bytes);
+		const std::vector<std::uint8_t> &bytes);
 	void create(std::uint32_t width, std::uint32_t height, Format format,
 		const std::vector<std::uint8_t> &bytes);
 
 	// Move bytes.
 	Image(std::uint32_t width, std::uint32_t height, Format format, 
-		std::vector<uint8_t> &&bytes);
+		std::vector<std::uint8_t> &&bytes);
 	void create(std::uint32_t width, std::uint32_t height, Format format,
 		std::vector<std::uint8_t> &&bytes);
 
+	// Without bytes.
+	Image(std::uint32_t width, std::uint32_t height, Format format);
+	void create(std::uint32_t width, std::uint32_t height, Format format);
+	
 	~Image();
+	void clear();
 	
 	Format getFormat() const;
 	std::uint32_t getWidth() const;
