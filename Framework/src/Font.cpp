@@ -50,9 +50,24 @@ void Font::create(const std::string & facePath, std::uint8_t size, ResourceHandl
 	}
 }
 
+Font::~Font()
+{
+}
+
+void Font::clear()
+{
+	mAtlas.clear();
+	mChars.clear();
+}
+
 ResourceHandle<ImageAtlas> Font::getAtlas()
 {
 	return mAtlas;
+}
+
+uint32_t Font::getSize() const
+{
+	return mChars.size() * (sizeof(GlyphInfo) + sizeof(uint32_t));
 }
 
 bool Font::cacheChar(uint32_t charCode)
@@ -73,7 +88,7 @@ bool Font::cacheChar(uint32_t charCode)
 				g->bitmap.buffer + g->bitmap.width * g->bitmap.rows)));
 		img.flipVerticaly();
 
-		ImageAtlas::Rect rc = mAtlas.get()->insert(img);
+		ImageAtlas::Rect rc = mAtlas->insert(img);
 
 		if (rc == ImageAtlas::Rect(0, 0, 0, 0))
 			return false;
@@ -94,8 +109,11 @@ bool Font::cacheChar(uint32_t charCode)
 	return true;
 }
 
-void Font::putChar(std::uint32_t charCode, std::vector<TextVertex> &buffer, glm::vec2 &penPos)
+void Font::putChar(std::uint32_t charCode, std::vector<TextVertexLayout::Data> &buffer, 
+	glm::vec2 &penPos)
 {
+	typedef TextVertexLayout::Data Vertex;
+
 	// Control characters.
 	if (charCode == '\n')
 	{
@@ -136,13 +154,13 @@ void Font::putChar(std::uint32_t charCode, std::vector<TextVertex> &buffer, glm:
 	if (!w || !h)
 		return;
 
-	buffer.push_back(TextVertex{ x2, y2, tu, tv + h / mAtlas.get()->getHeight() });
-	buffer.push_back(TextVertex{ x2 + w, y2, tu + w / mAtlas.get()->getWidth(), 
-		tv + h / mAtlas.get()->getHeight() });
-	buffer.push_back(TextVertex{ x2, y2 - h, tu, tv });
-	buffer.push_back(TextVertex{ x2 + w, y2, tu + w / mAtlas.get()->getWidth(),
-		tv + h / mAtlas.get()->getHeight() });
-	buffer.push_back(TextVertex{ x2, y2 - h, tu, tv });
-	buffer.push_back(TextVertex{ x2 + w, y2 - h, tu + w / mAtlas.get()->getWidth(), tv });
+	buffer.push_back(Vertex{ x2, y2, tu, tv + h / mAtlas->getHeight() });
+	buffer.push_back(Vertex{ x2 + w, y2, tu + w / mAtlas->getWidth(), 
+		tv + h / mAtlas->getHeight() });
+	buffer.push_back(Vertex{ x2, y2 - h, tu, tv });
+	buffer.push_back(Vertex{ x2 + w, y2, tu + w / mAtlas->getWidth(),
+		tv + h / mAtlas->getHeight() });
+	buffer.push_back(Vertex{ x2, y2 - h, tu, tv });
+	buffer.push_back(Vertex{ x2 + w, y2 - h, tu + w / mAtlas->getWidth(), tv });
 }
 

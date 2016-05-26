@@ -6,8 +6,7 @@
 
 class Texture : public GpuResource
 {
-	friend class Renderer;
-
+public:
 	enum class Type
 	{
 		UNCOMPRESSED_2D,
@@ -16,7 +15,6 @@ class Texture : public GpuResource
 		COMPRESSED_2D_ARRAY
 	};
 
-public:
 	Texture();
 
 	// create texture

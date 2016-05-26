@@ -1,4 +1,7 @@
 #include "../include/Renderer.hpp"
+#include "../include/Shader.hpp"
+#include "../include/Texture.hpp"
+//#include "../include/VertexBuffer.hpp"
 using namespace std;
 
 Renderer::Renderer() :
@@ -18,14 +21,14 @@ void Renderer::init()
 
 void Renderer::bindShader(Shader &shr)
 {
-	gl::UseProgram(shr.mID);
+	gl::UseProgram(shr.getID());
 }
 
 void Renderer::bindTexture(Texture &tex, int32_t slot)
 {
 	GLenum target;
 	
-	switch (tex.mType)
+	switch (tex.getType())
 	{
 	case Texture::Type::COMPRESSED_2D:
 	case Texture::Type::UNCOMPRESSED_2D:

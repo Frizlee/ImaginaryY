@@ -12,7 +12,7 @@ public:
 
 	Shader(std::string vertexShader, std::string fragmentShader);
 	void create(std::string vertexShader, std::string fragmentShader);
-
+	
 	void clear();
 	~Shader();
 	GLint getLocation(std::string name);

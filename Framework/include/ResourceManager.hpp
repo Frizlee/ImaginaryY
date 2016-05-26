@@ -37,11 +37,18 @@ class ResourceHandle
 
 public:
 	ResourceHandle();
-	ResourceHandle(const ResourceHandle<T> &r);
+
+	// Copy/Move constructors and assignments
+	ResourceHandle(const ResourceHandle<T> &lhs);
+	ResourceHandle(ResourceHandle<T> &&rhs);
+	ResourceHandle<T>& operator=(ResourceHandle<T> cas);
+	ResourceHandle<T>& operator=(ResourceHandle<T> &&rhs);
+	
 	~ResourceHandle();
+	void clear();
 
-	ResourceHandle<T>& operator=(const ResourceHandle<T>&);
-
+	T& operator*() const;
+	T* operator->() const;
 	T* get();
 	std::string getName();
 
@@ -81,32 +88,61 @@ inline ResourceHandle<T>::ResourceHandle()
 }
 
 template<typename T>
-inline ResourceHandle<T>::ResourceHandle(const ResourceHandle<T> &r)
+inline ResourceHandle<T>::ResourceHandle(const ResourceHandle<T> &lhs)
 {	
-	mBase = r.mBase;
+	mBase = lhs.mBase;
 	mBase->addRef();
+}
+
+template<typename T>
+inline ResourceHandle<T>::ResourceHandle(ResourceHandle<T> &&rhs)
+{
+	swap(mBase, rhs.mBase);
+}
+
+template<typename T>
+inline ResourceHandle<T>& ResourceHandle<T>::operator=(ResourceHandle<T> cas)
+{
+	// Copy constructor allready called.
+
+	if (mBase != nullptr)
+		mBase->subRef();
+
+	swap(mBase, cas.mBase);
+	return *this;
+}
+
+template<typename T>
+inline ResourceHandle<T>& ResourceHandle<T>::operator=(ResourceHandle<T> &&rhs)
+{
+	swap(mBase, rhs.mBase);
+	return *this;
 }
 
 template<typename T>
 inline ResourceHandle<T>::~ResourceHandle()
 {
-	mBase->subRef();
+	if (mBase != nullptr)
+		mBase->subRef();
 }
 
 template<typename T>
-inline ResourceHandle<T>& ResourceHandle<T>::operator=(const ResourceHandle<T> &other)
+inline void ResourceHandle<T>::clear()
 {
-	if (this != &other)
-	{
-		if (mBase != nullptr)
-		{
-			mBase->subRef();
-		}
+	mBase->subRef();
+	mBase = nullptr;
+}
 
-		mBase = other.mBase;
-		mBase->addRef();
-	}
-	return *this;
+template<typename T>
+inline T& ResourceHandle<T>::operator*() const
+{
+	return *dynamic_cast<T*>(mBase->mPtr.get());
+}
+
+template<typename T>
+inline T* ResourceHandle<T>::operator->() const
+{
+	return dynamic_cast<T*>(mBase->mPtr.get());
 }
 
 template<typename T>
@@ -131,6 +167,8 @@ inline ResourceHandle<T>::ResourceHandle(ResourceBase *base)
 template<typename T>
 inline ResourceHandle<T> ResourceManager::getFreeHandle(std::string name)
 {
+	static_assert(std::is_base_of<Resource, T>(), "getFreeHandle must operate on Resource");
+
 	std::pair<std::unordered_map<Guid, ResourceBase>::iterator, bool> ret;
 
 	do
@@ -148,5 +186,4 @@ inline ResourceHandle<T> ResourceManager::getFreeHandle(std::string name)
 }
 
 #endif // RESOURCE_MANAGER_HPP
-
 

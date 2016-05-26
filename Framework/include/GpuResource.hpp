@@ -6,9 +6,16 @@
 
 class GpuResource : public Resource
 {
+	friend class Renderer;
+
 public:	
 	GpuResource();
 	
+	GpuResource(const GpuResource &lhs) = delete;
+	GpuResource(GpuResource &&rhs);
+	GpuResource& operator=(const GpuResource &lhs) = delete;
+	GpuResource& operator=(GpuResource &&rhs);
+
 	virtual ~GpuResource() = 0;
 	virtual void clear() = 0;
 

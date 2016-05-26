@@ -75,14 +75,14 @@ void ImageAtlas::create(std::uint32_t width, std::uint32_t height, Format format
 	mRoot->mRect.w = height;
 }
 
+ImageAtlas::~ImageAtlas()
+{
+}
+
 void ImageAtlas::clear()
 {
 	mRoot.release();
 	Image::clear();
-}
-
-ImageAtlas::~ImageAtlas()
-{
 }
 
 ImageAtlas::Rect ImageAtlas::insert(Image &img)

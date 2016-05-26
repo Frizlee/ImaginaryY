@@ -4,6 +4,8 @@
 #include <ResourceManager.hpp>
 #include <Font.hpp>
 #include <Text.hpp>
+#include <Shader.hpp>
+#include <Texture.hpp>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/mat4x4.hpp>

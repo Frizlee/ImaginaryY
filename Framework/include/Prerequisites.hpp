@@ -2,6 +2,7 @@
 #define PREREQUISITES_HPP
 
 // Include standart headers
+#include <type_traits>
 #include <cstdint>
 #include <algorithm>
 #include <iostream>
@@ -15,3 +16,4 @@
 #include <codecvt>
 
 #endif // PREREQUISITES_HPP
+

@@ -7,7 +7,7 @@
 #include <PngCodec.hpp>
 #include <ImageAtlas.hpp>
 #include <chrono>
-#include <VertexLayouts.hpp>
+#include <VertexLayout.hpp>
 #include <Text.hpp>
 #include <sstream>
 using namespace std;
@@ -206,9 +206,9 @@ void Application::setupGraphic()
 	gl::BindVertexArray(mTextVao);
 	gl::BindBuffer(gl::ARRAY_BUFFER, mTextVao);
 	gl::EnableVertexAttribArray(0);
-	gl::VertexAttribPointer(0, 2, gl::FLOAT, gl::FALSE_, sizeof(TextVertex), 0);
+	gl::VertexAttribPointer(0, 2, gl::FLOAT, gl::FALSE_, TextVertexLayout::Size(), 0);
 	gl::EnableVertexAttribArray(1);
-	gl::VertexAttribPointer(1, 2, gl::FLOAT, gl::FALSE_, sizeof(TextVertex), 
+	gl::VertexAttribPointer(1, 2, gl::FLOAT, gl::FALSE_, TextVertexLayout::Size(), 
 		(GLvoid*)(2 * sizeof(float)));
 
 	// Send data
@@ -335,17 +335,17 @@ void Application::calculateLogic(double deltaTime)
 	infoDisplay << "PlayerX: " << mPlayer.getPos().x << endl;
 	infoDisplay << "PlayerZ: " << mPlayer.getPos().z << endl;
 	infoDisplay << "EnemyX: " << mEnemy.getPos().x << endl;
-	infoDisplay << "EnemyY: " << mEnemy.getPos().z << endl;
+	infoDisplay << "EnemyZ: " << mEnemy.getPos().z << endl;
 
 	mSimpleText.create(infoDisplay.str(), mComicSansFont);
 	gl::BindBuffer(gl::ARRAY_BUFFER, mTextVbo);
-	gl::BufferSubData(gl::ARRAY_BUFFER, 0, mSimpleText.getBuffer().size() * sizeof(TextVertex)
-		, mSimpleText.getBuffer().data());
-	gl::BufferSubData(gl::ARRAY_BUFFER, mSimpleText.getBuffer().size() * sizeof(TextVertex), 
-		mPlayerHP.getBuffer().size() * sizeof(TextVertex), mPlayerHP.getBuffer().data());
+	gl::BufferSubData(gl::ARRAY_BUFFER, 0, mSimpleText.getBuffer().size() * TextVertexLayout::Size(), 
+		mSimpleText.getBuffer().data());
+	gl::BufferSubData(gl::ARRAY_BUFFER, mSimpleText.getBuffer().size() * TextVertexLayout::Size(),
+		mPlayerHP.getBuffer().size() * TextVertexLayout::Size(), mPlayerHP.getBuffer().data());
 	gl::BufferSubData(gl::ARRAY_BUFFER, 
-		(mSimpleText.getBuffer().size() + mPlayerHP.getBuffer().size()) * sizeof(TextVertex),
-		mEnemyHP.getBuffer().size() * sizeof(TextVertex), mEnemyHP.getBuffer().data());
+		(mSimpleText.getBuffer().size() + mPlayerHP.getBuffer().size()) * TextVertexLayout::Size(),
+		mEnemyHP.getBuffer().size() * TextVertexLayout::Size(), mEnemyHP.getBuffer().data());
 }
 
 void Application::renderScene()

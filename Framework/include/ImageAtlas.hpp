@@ -32,9 +32,9 @@ public:
 
 	ImageAtlas(std::uint32_t width, std::uint32_t height, Format format);
 	void create(std::uint32_t width, std::uint32_t height, Format format);
-
-	void clear();
+	
 	~ImageAtlas();
+	void clear();
 
 	Rect insert(Image &img);
 

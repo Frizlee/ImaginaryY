@@ -1,13 +1,14 @@
 #ifndef FONT_HPP
 #define FONT_HPP
 #include "Prerequisites.hpp"
+#include "Resource.hpp"
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include "ResourceManager.hpp"
 #include "ImageAtlas.hpp"
-#include "VertexLayouts.hpp"
+#include "VertexLayout.hpp"
 
-class Font
+class Font : public Resource
 {
 	friend class Text;
 
@@ -17,8 +18,13 @@ public:
 		float spacing = 1.5f);
 	void create(const std::string &facePath, std::uint8_t size, ResourceHandle<ImageAtlas> atlas, 
 		float spacing = 1.5f);
-	ResourceHandle<ImageAtlas> getAtlas();
+	
 
+	~Font();
+	void clear();
+
+	ResourceHandle<ImageAtlas> getAtlas();
+	std::uint32_t getSize() const;
 
 private:
 	struct GlyphInfo
@@ -43,7 +49,8 @@ private:
 	std::unordered_map<std::uint32_t, GlyphInfo> mChars;
 
 	bool cacheChar(std::uint32_t charCode);
-	void putChar(std::uint32_t charCode, std::vector<TextVertex> &buffer, glm::vec2 &penPos);
+	void putChar(std::uint32_t charCode, std::vector<TextVertexLayout::Data> &buffer, 
+		glm::vec2 &penPos);
 };
 
 #endif // FONT_HPP

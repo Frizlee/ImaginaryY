@@ -8,7 +8,7 @@ ResourceBase::~ResourceBase()
 {
 	if (mRefCounter != 0);// TODO: Error handling, resource is still used.
 	
-	if (mPtr == nullptr); // TODO: Error handling, resourece was already been deleted.	
+	if (mPtr == nullptr); // TODO: Error handling, resourece has been already deleted.	
 }
 
 ResourceBase::ResourceBase(std::string name)
@@ -25,7 +25,6 @@ void ResourceBase::subRef()
 {
 	mRefCounter--;
 }
-
 
 ResourceManager::ResourceManager()
 {

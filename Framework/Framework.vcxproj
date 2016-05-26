@@ -150,7 +150,8 @@
     <ClInclude Include="include\Shader.hpp" />
     <ClInclude Include="include\Text.hpp" />
     <ClInclude Include="include\Texture.hpp" />
-    <ClInclude Include="include\VertexLayouts.hpp" />
+    <ClInclude Include="include\VertexBuffer.hpp" />
+    <ClInclude Include="include\VertexLayout.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Codec.cpp" />
@@ -170,6 +171,8 @@
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Text.cpp" />
     <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\VertexBuffer.cpp" />
+    <ClCompile Include="src\VertexLayout.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

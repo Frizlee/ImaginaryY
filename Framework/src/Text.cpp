@@ -27,7 +27,7 @@ void Text::create(const string &content, Font &fnt)
 		fnt.putChar(*it, mBuffer, penPos);
 }
 
-const std::vector<TextVertex>& Text::getBuffer()
+const std::vector<TextVertexLayout::Data>& Text::getBuffer()
 {
 	return mBuffer;
 }

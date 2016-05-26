@@ -4,7 +4,6 @@
 #include "Resource.hpp"
 
 
-
 class Image : public Resource
 {
 	friend class Texture;
@@ -48,7 +47,7 @@ public:
 	Image();
 
 	// Copy/Move constructors and assignments
-	Image(const Image& lhs);
+	Image(const Image &lhs);
 	Image(Image &&rhs);
 	Image& operator=(Image cas);
 	Image& operator=(Image &&rhs);
@@ -69,7 +68,7 @@ public:
 	Image(std::uint32_t width, std::uint32_t height, Format format);
 	void create(std::uint32_t width, std::uint32_t height, Format format);
 	
-	~Image();
+	virtual ~Image();
 	void clear();
 	
 	Format getFormat() const;

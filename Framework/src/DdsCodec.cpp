@@ -183,191 +183,191 @@ DdsCodec::~DdsCodec()
 
 void DdsCodec::decode(std::istream &input, Resource &res)
 {
-	DdsHeader header;
-	DdsPixelFormat *pixelFormat;
-	Image *imgRes;
-
-	//if (res->getType() != Resource::Type::IMAGE)
-	//{
-	//	// TODO: Error handling.
-	//	return;
-	//}
-
-	imgRes = dynamic_cast<Image*>(&res);
+	try
+	{
+		DdsHeader header;
+		DdsPixelFormat *pixelFormat;
+		Image &imgRes = dynamic_cast<Image&>(res);
 	
-	if (!(input.read(reinterpret_cast<char*>(&header), sizeof(header))) || header.dwMagic != DDS_MAGIC)
-	{
-		// TODO: Error handling.
-		return;
-	}
-
-	if (!((header.dwFlags & DDSD_CAPS) && (header.dwFlags & DDSD_HEIGHT) &&
-		(header.dwFlags & DDSD_WIDTH) && (header.dwFlags & DDSD_PIXELFORMAT)))
-	{
-		// TODO: Error handling.
-		return;
-	}
-
-	pixelFormat = &header.pixelFormat;
-
-	if (pixelFormat->dwFlags & DDPF_FOURCC)
-	{
-		// Compressed.
-		Image::Format format;
-		size_t blockSize;
-		vector<uint8_t> block;
-		vector<uint8_t> bytes;
-		uint32_t blockWidth;
-		uint32_t blockHeight;
-
-		switch (pixelFormat->dwFourCC)
+		if (!(input.read(reinterpret_cast<char*>(&header), sizeof(header))) || header.dwMagic != DDS_MAGIC)
 		{
-		case DDS_BC1:
-			format = Image::Format::BC1_RGB;
-			break;
-
-		case DDS_BC2:
-			format = Image::Format::BC2_RGBA;
-			break;
-
-		case DDS_BC3:
-			format = Image::Format::BC3_RGBA;
-			break;
-
-		case DDS_BC4S:
-			format = Image::Format::BC4_SIGNED_R;
-			break;
-
-		case DDS_BC4U:
-			format = Image::Format::BC4_R;
-			break;
-
-		case DDS_BC5S:
-			format = Image::Format::BC5_SIGNED_RG;
-			break;
-
-		case DDS_BC5U:
-			format = Image::Format::BC5_RG;
-			break;
-
-		default:
-			// TODO: Error handling.
+			// TODO: Error handling
 			return;
 		}
 
-		
-		blockHeight = (header.dwHeight + 3) / 4;
-		blockWidth = (header.dwWidth + 3) / 4;
-		blockSize = Image::CalculateBytesPerPixel(format);
-		bytes.resize(blockWidth * blockHeight * blockSize);
-		block.resize(blockSize);
-
-		for (uint32_t i = 0; i < blockHeight; i++)
+		if (!((header.dwFlags & DDSD_CAPS) && (header.dwFlags & DDSD_HEIGHT) &&
+			(header.dwFlags & DDSD_WIDTH) && (header.dwFlags & DDSD_PIXELFORMAT)))
 		{
-			uint32_t row = (blockHeight - i - 1) * blockWidth * blockSize;
-
-			for (uint32_t j = 0; j < blockWidth * blockSize; j += blockSize)
-			{
-				if (!input.read(reinterpret_cast<char*>(block.data()), blockSize))
-				{
-					// TODO: Error handling.
-					return;
-				}
-
-				flip(block, format);
-				copy(begin(block), end(block), begin(bytes) + row + j);
-			}
-		}
-
-		imgRes->create(header.dwWidth, header.dwHeight, format, move(bytes));
-	}
-	else if (pixelFormat->dwFlags & DDPF_RGB)
-	{
-		// Uncompressed.
-		bool hasAlpha = pixelFormat->dwFlags & DDPF_ALPHAPIXELS;
-		Image::Format format;
-		vector<uint8_t> bytes;
-		uint32_t bytesPerPixel;
-		union
-		{
-			uint8_t pixel[4];
-			uint32_t pixel32;
-		};
-		RGBAMask mask(&pixelFormat->dwRBitMask);
-		
-		if (hasAlpha == false)
-			mask.a = 0;
-
-		if (mask == BGR8mask)
-			format = Image::Format::RGB8;
-		else if (mask == BGRA8mask)
-			format = Image::Format::RGBA8;
-		else if (mask == B2G3R3mask)
-			format = Image::Format::R3G3B2;
-		else if (mask == B5G6R5mask)
-			format = Image::Format::R5G6B5;
-		else if (mask == BGRA4mask)
-			format = Image::Format::RGBA4;
-		else if (mask == BGR5A1mask)
-			format = Image::Format::RGB5A1;
-		else if (mask == BGR10A2mask)
-			format = Image::Format::RGB10A2;
-		else
-		{
-			// TODO: Error handling.
+			// TODO: Error handling
 			return;
 		}
 
-		// imgRes->create(header.dwWidth, header.dwHeight, format);
-		bytesPerPixel = Image::CalculateBytesPerPixel(format);
-		bytes.resize(header.dwWidth * header.dwHeight * bytesPerPixel);
-		
-		pixel[0] = 0;
-		pixel[1] = 0;
-		pixel[2] = 0;
-		pixel[3] = 0;
+		pixelFormat = &header.pixelFormat;
 
-		uint32_t comp[4]; // 0 - red, 1 - green, 2 - blue, 3 - alpha;
-		int8_t shifts[3]; // 0 - red, 1 - green, 2 - blue;
-
-		shifts[0] = popcount(mask.g | mask.b);
-		shifts[1] = popcount(mask.b) - popcount(mask.r);
-		shifts[2] = popcount(mask.r | mask.g);
-
-
-		for (uint32_t i = 0; i < header.dwHeight; i++)
+		if (pixelFormat->dwFlags & DDPF_FOURCC)
 		{
-			uint32_t row = (header.dwHeight - i - 1) * header.dwWidth * bytesPerPixel;
+			// Compressed.
+			Image::Format format;
+			size_t blockSize;
+			vector<uint8_t> block;
+			vector<uint8_t> bytes;
+			uint32_t blockWidth;
+			uint32_t blockHeight;
 
-			for (uint32_t j = 0; j < header.dwWidth * bytesPerPixel; j += bytesPerPixel)
+			switch (pixelFormat->dwFourCC)
 			{
-				if (!input.read(reinterpret_cast<char*>(&pixel), bytesPerPixel))
-				{
-					// TODO: Error handling.
-					return;
-				}
+			case DDS_BC1:
+				format = Image::Format::BC1_RGB;
+				break;
 
-				comp[0] = pixel32 & mask.r;
-				comp[1] = pixel32 & mask.g;
-				comp[2] = pixel32 & mask.b;
-				comp[3] = pixel32 & mask.a;
+			case DDS_BC2:
+				format = Image::Format::BC2_RGBA;
+				break;
 
-				pixel32 = comp[0] >> shifts[0] |
-					comp[2] << shifts[2] |
-					comp[3];
+			case DDS_BC3:
+				format = Image::Format::BC3_RGBA;
+				break;
 
-				if (shifts[1] > 0)
-					pixel32 |= comp[1] >> shifts[1];
-				else if (shifts[1] < 0)
-					pixel32 |= comp[1] << -shifts[1];
-				else
-					pixel32 |= comp[1];
+			case DDS_BC4S:
+				format = Image::Format::BC4_SIGNED_R;
+				break;
 
-				copy(pixel, pixel + bytesPerPixel, begin(bytes) + row + j);
+			case DDS_BC4U:
+				format = Image::Format::BC4_R;
+				break;
+
+			case DDS_BC5S:
+				format = Image::Format::BC5_SIGNED_RG;
+				break;
+
+			case DDS_BC5U:
+				format = Image::Format::BC5_RG;
+				break;
+
+			default:
+				// TODO: Error handling
+				return;
 			}
+
+		
+			blockHeight = (header.dwHeight + 3) / 4;
+			blockWidth = (header.dwWidth + 3) / 4;
+			blockSize = Image::CalculateBytesPerPixel(format);
+			bytes.resize(blockWidth * blockHeight * blockSize);
+			block.resize(blockSize);
+
+			for (uint32_t i = 0; i < blockHeight; i++)
+			{
+				uint32_t row = (blockHeight - i - 1) * blockWidth * blockSize;
+
+				for (uint32_t j = 0; j < blockWidth * blockSize; j += blockSize)
+				{
+					if (!input.read(reinterpret_cast<char*>(block.data()), blockSize))
+					{
+						// TODO: Error handling
+						return;
+					}
+
+					flip(block, format);
+					copy(begin(block), end(block), begin(bytes) + row + j);
+				}
+			}
+
+			imgRes.create(header.dwWidth, header.dwHeight, format, move(bytes));
+		}
+		else if (pixelFormat->dwFlags & DDPF_RGB)
+		{
+			// Uncompressed.
+			bool hasAlpha = pixelFormat->dwFlags & DDPF_ALPHAPIXELS;
+			Image::Format format;
+			vector<uint8_t> bytes;
+			uint32_t bytesPerPixel;
+			union
+			{
+				uint8_t pixel[4];
+				uint32_t pixel32;
+			};
+			RGBAMask mask(&pixelFormat->dwRBitMask);
+		
+			if (hasAlpha == false)
+				mask.a = 0;
+
+			if (mask == BGR8mask)
+				format = Image::Format::RGB8;
+			else if (mask == BGRA8mask)
+				format = Image::Format::RGBA8;
+			else if (mask == B2G3R3mask)
+				format = Image::Format::R3G3B2;
+			else if (mask == B5G6R5mask)
+				format = Image::Format::R5G6B5;
+			else if (mask == BGRA4mask)
+				format = Image::Format::RGBA4;
+			else if (mask == BGR5A1mask)
+				format = Image::Format::RGB5A1;
+			else if (mask == BGR10A2mask)
+				format = Image::Format::RGB10A2;
+			else
+			{
+				// TODO: Error handling.
+				return;
+			}
+
+			// imgRes->create(header.dwWidth, header.dwHeight, format);
+			bytesPerPixel = Image::CalculateBytesPerPixel(format);
+			bytes.resize(header.dwWidth * header.dwHeight * bytesPerPixel);
+		
+			pixel[0] = 0;
+			pixel[1] = 0;
+			pixel[2] = 0;
+			pixel[3] = 0;
+
+			uint32_t comp[4]; // 0 - red, 1 - green, 2 - blue, 3 - alpha;
+			int8_t shifts[3]; // 0 - red, 1 - green, 2 - blue;
+
+			shifts[0] = popcount(mask.g | mask.b);
+			shifts[1] = popcount(mask.b) - popcount(mask.r);
+			shifts[2] = popcount(mask.r | mask.g);
+
+
+			for (uint32_t i = 0; i < header.dwHeight; i++)
+			{
+				uint32_t row = (header.dwHeight - i - 1) * header.dwWidth * bytesPerPixel;
+
+				for (uint32_t j = 0; j < header.dwWidth * bytesPerPixel; j += bytesPerPixel)
+				{
+					if (!input.read(reinterpret_cast<char*>(&pixel), bytesPerPixel))
+					{
+						// TODO: Error handling.
+						return;
+					}
+
+					comp[0] = pixel32 & mask.r;
+					comp[1] = pixel32 & mask.g;
+					comp[2] = pixel32 & mask.b;
+					comp[3] = pixel32 & mask.a;
+
+					pixel32 = comp[0] >> shifts[0] |
+						comp[2] << shifts[2] |
+						comp[3];
+
+					if (shifts[1] > 0)
+						pixel32 |= comp[1] >> shifts[1];
+					else if (shifts[1] < 0)
+						pixel32 |= comp[1] << -shifts[1];
+					else
+						pixel32 |= comp[1];
+
+					copy(pixel, pixel + bytesPerPixel, begin(bytes) + row + j);
+				}
+			}
+
+			imgRes.create(header.dwWidth, header.dwHeight, format, move(bytes));
 		}
 
-		imgRes->create(header.dwWidth, header.dwHeight, format, move(bytes));
+	}
+	catch (const std::bad_cast &e)
+	{
+		// TODO: Error handling
 	}
 }
 

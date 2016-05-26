@@ -2,7 +2,7 @@
 #define TEXT_HPP
 #include "Prerequisites.hpp"
 #include "Font.hpp"
-#include "VertexLayouts.hpp"
+#include "VertexLayout.hpp"
 
 class Text
 {
@@ -11,10 +11,10 @@ public:
 	Text(const std::string &content, Font &fnt);
 	void create(const std::string &content, Font &fnt);
 	
-	const std::vector<TextVertex>& getBuffer();
+	const std::vector<TextVertexLayout::Data>& getBuffer();
 
 private:
-	std::vector<TextVertex> mBuffer;
+	std::vector<TextVertexLayout::Data> mBuffer;
 };
 
 #endif // MESH_HPP
