@@ -3,18 +3,33 @@
 using namespace std;
 
 Texture::Texture()
-	: GpuResource{}
+	: GpuResource()
 {
 }
 
+Texture::Texture(Texture &&rhs)
+	: GpuResource(move(rhs))
+{
+	swap(mFormat, rhs.mFormat);
+	swap(mType, rhs.mType);
+}
+
+Texture& Texture::operator=(Texture &&rhs)
+{
+	GpuResource::operator=(move(rhs));
+	swap(mFormat, rhs.mFormat);
+	swap(mType, rhs.mType);
+	return *this;
+}
+
 Texture::Texture(const Image &img, Renderer &renderer)
-	: GpuResource{}
+	: GpuResource()
 {
 	create(img, renderer);
 }
 
 Texture::Texture(std::vector<Image*> &&imgs, Renderer &renderer)
-	: GpuResource{}
+	: GpuResource()
 {
 	create(move(imgs), renderer);
 }
@@ -267,3 +282,4 @@ void Texture::ParseFormat(Image::Format imgFormat, GLint &format,
 		return;
 	}
 }
+

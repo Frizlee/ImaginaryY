@@ -17,6 +17,7 @@ struct memorybuf : std::streambuf
 class Codec
 {
 public:
+	Codec();
 	virtual ~Codec() = 0;
 
 	virtual void decode(std::istream &input, Resource &res) = 0;

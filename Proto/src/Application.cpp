@@ -99,12 +99,14 @@ void Application::run()
 
 void Application::setupGraphic()
 {
+	typedef TextureVertexLayout::Data TVLData;
+
 	ifstream file;
 	Image img;
 	string vertexShader, fragmentShader;
 	GLuint coloredVbo, texturedVbo;
 	vector<VertexColor> bufferColor;
-	vector<VertexTexture> bufferTexture;
+	vector<TVLData> bufferTexture;
 
 	gl::ClearColor(0.1875f, 0.8359375f, 0.78125f, 1.0f);
 	gl::Viewport(0, 0, WIDTH, HEIGHT);
@@ -117,36 +119,36 @@ void Application::setupGraphic()
 
 	bufferTexture.assign({
 		// Background
-		VertexTexture{ -15.0f, -6.0f, 0.0f, 0.0f, 0.0f },
-		VertexTexture{ -15.0f, 6.0f, 0.0f, 0.0f, 1.0f },
-		VertexTexture{ 15.0f, 6.0f, 0.0f, 1.0f, 1.0f },
-		VertexTexture{ 15.0f, 6.0f, 0.0f, 1.0f, 1.0f },
-		VertexTexture{ 15.0f, -6.0f, 0.0f, 1.0f, 0.0f },
-		VertexTexture{ -15.0f, -6.0f, 0.0f, 0.0f, 0.0f },
+		TVLData{ -15.0f, -6.0f, 0.0f, 0.0f, 0.0f },
+		TVLData{ -15.0f, 6.0f, 0.0f, 0.0f, 1.0f },
+		TVLData{ 15.0f, 6.0f, 0.0f, 1.0f, 1.0f },
+		TVLData{ 15.0f, 6.0f, 0.0f, 1.0f, 1.0f },
+		TVLData{ 15.0f, -6.0f, 0.0f, 1.0f, 0.0f },
+		TVLData{ -15.0f, -6.0f, 0.0f, 0.0f, 0.0f },
 
 		// Paralax background
-		VertexTexture{ -120.0f, -50.0f, -12.0f, 0.0f, 0.0f },
-		VertexTexture{ -120.0f, 50.0f, -12.0f, 0.0f, 1.0f },
-		VertexTexture{ 120.0f, 50.0f, -12.0f, 1.0f, 1.0f },
-		VertexTexture{ 120.0f, 50.0f, -12.0f, 1.0f, 1.0f },
-		VertexTexture{ 120.0f, -50.0f, -12.0f, 1.0f, 0.0f },
-		VertexTexture{ -120.0f, -50.0f, -12.0f, 0.0f, 0.0f },
+		TVLData{ -120.0f, -50.0f, -12.0f, 0.0f, 0.0f },
+		TVLData{ -120.0f, 50.0f, -12.0f, 0.0f, 1.0f },
+		TVLData{ 120.0f, 50.0f, -12.0f, 1.0f, 1.0f },
+		TVLData{ 120.0f, 50.0f, -12.0f, 1.0f, 1.0f },
+		TVLData{ 120.0f, -50.0f, -12.0f, 1.0f, 0.0f },
+		TVLData{ -120.0f, -50.0f, -12.0f, 0.0f, 0.0f },
 		
 		// Ramp
-		VertexTexture{ -15.0f, 0.0f, 15.0f, 0.0f, 0.0f },
-		VertexTexture{ -15.0f, 0.0f, 0.0f, 0.0f, 1.0f },
-		VertexTexture{ 15.0f, 0.0f, 0.0f, 1.0f, 1.0f },
-		VertexTexture{ 15.0f, 0.0f, 0.0f, 1.0f, 1.0f },
-		VertexTexture{ 15.0f, 0.0f, 15.0f, 1.0f, 0.0f },
-		VertexTexture{ -15.0f, 0.0f, 15.0f, 0.0f, 0.0f },
+		TVLData{ -15.0f, 0.0f, 15.0f, 0.0f, 0.0f },
+		TVLData{ -15.0f, 0.0f, 0.0f, 0.0f, 1.0f },
+		TVLData{ 15.0f, 0.0f, 0.0f, 1.0f, 1.0f },
+		TVLData{ 15.0f, 0.0f, 0.0f, 1.0f, 1.0f },
+		TVLData{ 15.0f, 0.0f, 15.0f, 1.0f, 0.0f },
+		TVLData{ -15.0f, 0.0f, 15.0f, 0.0f, 0.0f },
 
 		// PLayer / Enemy
-		VertexTexture{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
-		VertexTexture{ 0.0f, PLAYER_HEIGHT, 0.0f, 0.0f, 0.5f },
-		VertexTexture{ PLAYER_WIDTH, PLAYER_HEIGHT, 0.0f, 0.279296875f, 0.5f },
-		VertexTexture{ PLAYER_WIDTH, PLAYER_HEIGHT, 0.0f, 0.279296875f, 0.5f },
-		VertexTexture{ PLAYER_WIDTH, 0.0f, 0.0f, 0.279296875f, 0.0f },
-		VertexTexture{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }
+		TVLData{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
+		TVLData{ 0.0f, PLAYER_HEIGHT, 0.0f, 0.0f, 0.5f },
+		TVLData{ PLAYER_WIDTH, PLAYER_HEIGHT, 0.0f, 0.279296875f, 0.5f },
+		TVLData{ PLAYER_WIDTH, PLAYER_HEIGHT, 0.0f, 0.279296875f, 0.5f },
+		TVLData{ PLAYER_WIDTH, 0.0f, 0.0f, 0.279296875f, 0.0f },
+		TVLData{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }
 	});
 
 	// Load shaders
@@ -190,7 +192,7 @@ void Application::setupGraphic()
 	gl::BindVertexArray(0);
 
 	// Create texture vao
-	gl::GenVertexArrays(1, &mTexturedVao);
+	/*gl::GenVertexArrays(1, &mTexturedVao);
 	gl::GenBuffers(1, &texturedVbo);
 	gl::BindVertexArray(mTexturedVao);
 	gl::BindBuffer(gl::ARRAY_BUFFER, texturedVbo);
@@ -198,31 +200,24 @@ void Application::setupGraphic()
 	gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE_, sizeof(VertexTexture), 0);
 	gl::EnableVertexAttribArray(1);
 	gl::VertexAttribPointer(1, 2, gl::FLOAT, gl::FALSE_, sizeof(VertexTexture), 
-		(GLvoid*)(3 * sizeof(float)));
+		(GLvoid*)(3 * sizeof(float)));*/
+	mTextureBuffer.create(bufferTexture.size() * TextureVertexLayout::Size(), mRenderer);
+	mTextureArray.create(mTextureBuffer, mRenderer);
 	
 	// Create text vao
-	gl::GenVertexArrays(1, &mTextVao);
-	gl::GenBuffers(1, &mTextVbo);
-	gl::BindVertexArray(mTextVao);
-	gl::BindBuffer(gl::ARRAY_BUFFER, mTextVao);
-	gl::EnableVertexAttribArray(0);
-	gl::VertexAttribPointer(0, 2, gl::FLOAT, gl::FALSE_, TextVertexLayout::Size(), 0);
-	gl::EnableVertexAttribArray(1);
-	gl::VertexAttribPointer(1, 2, gl::FLOAT, gl::FALSE_, TextVertexLayout::Size(), 
-		(GLvoid*)(2 * sizeof(float)));
+	mTextBuffer.create(1024 * 1024, mRenderer);
+	mTextArray.create(mTextBuffer, mRenderer);
 
 	// Send data
 	gl::BindBuffer(gl::ARRAY_BUFFER, coloredVbo);
 	gl::BufferData(gl::ARRAY_BUFFER, bufferColor.size() * sizeof(VertexColor),
 		bufferColor.data(), gl::STATIC_DRAW);
 
-	gl::BindBuffer(gl::ARRAY_BUFFER, texturedVbo);
-	gl::BufferData(gl::ARRAY_BUFFER, bufferTexture.size() * sizeof(VertexTexture),
-		bufferTexture.data(), gl::STATIC_DRAW);
+	// gl::BindBuffer(gl::ARRAY_BUFFER, texturedVbo);
+	// gl::BufferData(gl::ARRAY_BUFFER, bufferTexture.size() * sizeof(VertexTexture),
+	// 	bufferTexture.data(), gl::STATIC_DRAW);
 
-	// 1MB for text will be like 11000 characters
-	gl::BindBuffer(gl::ARRAY_BUFFER, mTextVbo);
-	gl::BufferData(gl::ARRAY_BUFFER, 1024 * 1024, nullptr, gl::DYNAMIC_DRAW);
+	mTextureBuffer.add(bufferTexture, mRenderer);
 
 	// Load textures;
 	file.open("image.png", ios_base::binary);
@@ -267,6 +262,7 @@ void Application::setupGraphic()
 	// Setup fullscreen quad;
 	setupFullscreenQuad();
 }
+
 
 void Application::startLoop()
 {
@@ -338,14 +334,10 @@ void Application::calculateLogic(double deltaTime)
 	infoDisplay << "EnemyZ: " << mEnemy.getPos().z << endl;
 
 	mSimpleText.create(infoDisplay.str(), mComicSansFont);
-	gl::BindBuffer(gl::ARRAY_BUFFER, mTextVbo);
-	gl::BufferSubData(gl::ARRAY_BUFFER, 0, mSimpleText.getBuffer().size() * TextVertexLayout::Size(), 
-		mSimpleText.getBuffer().data());
-	gl::BufferSubData(gl::ARRAY_BUFFER, mSimpleText.getBuffer().size() * TextVertexLayout::Size(),
-		mPlayerHP.getBuffer().size() * TextVertexLayout::Size(), mPlayerHP.getBuffer().data());
-	gl::BufferSubData(gl::ARRAY_BUFFER, 
-		(mSimpleText.getBuffer().size() + mPlayerHP.getBuffer().size()) * TextVertexLayout::Size(),
-		mEnemyHP.getBuffer().size() * TextVertexLayout::Size(), mEnemyHP.getBuffer().data());
+	mTextBuffer.clear();
+	mInfoDisplay = mTextBuffer.add(mSimpleText.getBuffer(), mRenderer);
+	mPlayerDisplay = mTextBuffer.add(mPlayerHP.getBuffer(), mRenderer);
+	mEnemyDisplay = mTextBuffer.add(mEnemyHP.getBuffer(), mRenderer);
 }
 
 void Application::renderScene()
@@ -375,7 +367,8 @@ void Application::renderScene()
 	gl::UniformMatrix4fv(matrixLocationTexture, 1, gl::FALSE_, &(mProjMatrix * mViewMatrix)[0][0]);
 	gl::Uniform1i(samplerLocationTexture, 0);
 	gl::BindSampler(0, mSampler);
-	gl::BindVertexArray(mTexturedVao);
+	// gl::BindVertexArray(mTexturedVao);
+	mRenderer.bindVertexArray(mTextureArray);
 
 	mRenderer.bindTexture(mParalaxBackgroundTex, 0);
 	gl::DrawArrays(gl::TRIANGLES, 6, 6);
@@ -410,10 +403,11 @@ void Application::renderScene()
 	// gl::UniformMatrix4fv(orthoMatrixLocationText, 1, gl::FALSE_, &glm::mat4()[0][0]);
 	gl::Uniform1i(samplerLocationText, 0);
 	gl::BindSampler(0, mSampler);
-	gl::BindVertexArray(mTextVao);
+	mRenderer.bindVertexArray(mTextArray);
 
 	mRenderer.bindTexture(mFontTex, 0);
-	gl::DrawArrays(gl::TRIANGLES, 0, mSimpleText.getBuffer().size());
+	gl::DrawArrays(gl::TRIANGLES, mInfoDisplay / TextVertexLayout::Size(), 
+		mSimpleText.getBuffer().size());
 
 	// Calculate player pos on 2d space
 	glm::vec4 transVec = mProjMatrix * mViewMatrix * glm::vec4(mPlayer.getPos(), 1.0f);
@@ -426,7 +420,8 @@ void Application::renderScene()
 
 	gl::UniformMatrix4fv(orthoMatrixLocationText, 1, gl::FALSE_,
 		&(mOrthoMatrix * glm::translate(glm::vec3(transVec)))[0][0]);
-	gl::DrawArrays(gl::TRIANGLES, mSimpleText.getBuffer().size(), mPlayerHP.getBuffer().size());
+	gl::DrawArrays(gl::TRIANGLES, mPlayerDisplay / TextVertexLayout::Size(), 
+		mPlayerHP.getBuffer().size());
 
 
 	// Calculate Enemy pos on 2d space
@@ -440,13 +435,15 @@ void Application::renderScene()
 
 	gl::UniformMatrix4fv(orthoMatrixLocationText, 1, gl::FALSE_,
 	 	&(mOrthoMatrix * glm::translate(glm::vec3(transVec)))[0][0]);
-	gl::DrawArrays(gl::TRIANGLES, mSimpleText.getBuffer().size() + mPlayerHP.getBuffer().size(),
+	gl::DrawArrays(gl::TRIANGLES, mEnemyDisplay / TextVertexLayout::Size(), 
 		mEnemyHP.getBuffer().size());
 
 	glfwSwapBuffers(mWnd);
 
-	if (GLenum e = gl::GetError() != 0)
-		cout << e << endl;
+	GLenum e;
+
+	if ((e = gl::GetError()) != gl::NO_ERROR_)
+		cout << "glGetError: " << e << endl;
 }
 
 void Application::setupGizmo()

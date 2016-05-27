@@ -31,14 +31,14 @@ private:
 
 template<typename T>
 inline VertexBuffer<T>::VertexBuffer()
-	: GpuResource{}, mPosition{ 0 }
+	: mPosition{ 0 }
 {
 	static_assert(std::is_base_of<VertexLayout, T>(), "VertexBuffer must operate on VertexLayout");
 }
 
 template<typename T>
 inline VertexBuffer<T>::VertexBuffer(VertexBuffer<T> &&rhs)
-	: GpuResource{ move(rhs) }
+	: GpuResource(move(rhs))
 {
 	swap(mPosition, rhs.mPosition);
 }
@@ -46,14 +46,14 @@ inline VertexBuffer<T>::VertexBuffer(VertexBuffer<T> &&rhs)
 template<typename T>
 inline VertexBuffer<T>& VertexBuffer<T>::operator=(VertexBuffer<T> &&rhs)
 {
-	VertexBuffer(move(rhs));
+	GpuResource::operator=(move(rhs));
 	swap(mPosition, rhs.mPosition);
 	return *this;
 }
 
 template<typename T>
 inline VertexBuffer<T>::VertexBuffer(std::uint32_t size, Renderer &renderer)
-	: GpuResource{}, mPosition{ 0 }
+	: GpuResource(), mPosition{ 0 }
 {
 	static_assert(std::is_base_of<VertexLayout, T>(), "VertexBuffer must operate on VertexLayout");
 	create(size);
@@ -64,19 +64,18 @@ inline void VertexBuffer<T>::create(std::uint32_t size, Renderer &renderer)
 {
 	gl::GenBuffers(1, &mID);
 	renderer.bindVertexBuffer(*this);
-	gl::BufferData(gl::ARRAY_BUFFER, size * T::Size(), nullptr, gl::STATIC_DRAW);
+	gl::BufferData(gl::ARRAY_BUFFER, size * T::Size(), nullptr, gl::DYNAMIC_DRAW);
 }
 
 template<typename T>
 inline VertexBuffer<T>::~VertexBuffer()
 {
-	clear();
+	gl::DeleteBuffers(1, &mID);
 }
 
 template<typename T>
 inline void VertexBuffer<T>::clear()
 {
-	gl::DeleteBuffers(1, &mID);
 	mPosition = 0;
 }
 
@@ -93,7 +92,7 @@ inline std::uint32_t VertexBuffer<T>::add(const std::vector<typename T::Data> &l
 }
 
 template<typename T>
-inline std::uint32_t VertexBuffer<T>::add(std::vector<typename T::Data>&& rhsData, Renderer & renderer)
+inline std::uint32_t VertexBuffer<T>::add(std::vector<typename T::Data> &&rhsData, Renderer & renderer)
 {
 	std::uint32_t currentPos = mPosition;
 

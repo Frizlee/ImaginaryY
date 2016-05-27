@@ -17,6 +17,12 @@ public:
 
 	Texture();
 
+	// Copy/Move constructors and assignments
+	Texture(const Texture &lhs) = delete;
+	Texture(Texture &&rhs);
+	Texture& operator=(const Texture &lhs) = delete;
+	Texture& operator=(Texture &&rhs);
+
 	// create texture
 	Texture(const Image &img, Renderer &renderer);
 	void create(const Image &img, Renderer &renderer);

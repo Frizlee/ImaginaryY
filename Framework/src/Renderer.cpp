@@ -1,11 +1,12 @@
 #include "../include/Renderer.hpp"
 #include "../include/Shader.hpp"
 #include "../include/Texture.hpp"
-//#include "../include/VertexBuffer.hpp"
+#include "../include/VertexArray.hpp"
+#include "../include/VertexBuffer.hpp"
 using namespace std;
 
-Renderer::Renderer() :
-	mInitialized{ false }
+Renderer::Renderer() 
+	: mInitialized{ false }
 {
 }
 
@@ -43,6 +44,11 @@ void Renderer::bindTexture(Texture &tex, int32_t slot)
 
 	gl::ActiveTexture(gl::TEXTURE0 + slot);
 	gl::BindTexture(target, tex.mID);
+}
+
+void Renderer::bindVertexArray(VertexArray &arr)
+{
+	gl::BindVertexArray(arr.getID());
 }
 
 void Renderer::setDepthTest(bool state)

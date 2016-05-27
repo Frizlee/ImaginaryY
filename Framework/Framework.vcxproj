@@ -150,6 +150,7 @@
     <ClInclude Include="include\Shader.hpp" />
     <ClInclude Include="include\Text.hpp" />
     <ClInclude Include="include\Texture.hpp" />
+    <ClInclude Include="include\VertexArray.hpp" />
     <ClInclude Include="include\VertexBuffer.hpp" />
     <ClInclude Include="include\VertexLayout.hpp" />
   </ItemGroup>
@@ -171,6 +172,7 @@
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Text.cpp" />
     <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\VertexArray.cpp" />
     <ClCompile Include="src\VertexBuffer.cpp" />
     <ClCompile Include="src\VertexLayout.cpp" />
   </ItemGroup>

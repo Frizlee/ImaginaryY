@@ -6,6 +6,8 @@
 #include <Text.hpp>
 #include <Shader.hpp>
 #include <Texture.hpp>
+#include <VertexBuffer.hpp>
+#include <VertexArray.hpp>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/mat4x4.hpp>
@@ -41,6 +43,13 @@ private:
 	Text mSimpleText;
 	Text mPlayerHP;
 	Text mEnemyHP;
+	VertexBuffer<TextVertexLayout> mTextBuffer;
+	VertexArray mTextArray;
+	VertexBuffer<TextureVertexLayout> mTextureBuffer;
+	VertexArray mTextureArray;
+	std::uint32_t mInfoDisplay;
+	std::uint32_t mPlayerDisplay;
+	std::uint32_t mEnemyDisplay;
 
 	double mRealDeltaTime;
 
@@ -66,9 +75,6 @@ private:
 	glm::vec3 mCameraPos;
 
 	GLuint mColoredVao;
-	GLuint mTexturedVao;
-	GLuint mTextVao;
-	GLuint mTextVbo;
 
 	GLuint mGizmoVao;
 	GLuint mFullscreenQuadVao;

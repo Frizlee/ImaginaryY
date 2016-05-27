@@ -1,11 +1,13 @@
 #include "../include/ImageAtlas.hpp"
 using namespace std;
 
-ImageAtlas::ImageAtlas() : mRoot{ make_unique<Node>() }
+ImageAtlas::ImageAtlas() 
+	: mRoot{ make_unique<Node>() }
 {
 }
 
-ImageAtlas::ImageAtlas(ImageAtlas &&rhs) : Image{ move(rhs) }
+ImageAtlas::ImageAtlas(ImageAtlas &&rhs) 
+	: Image(move(rhs))
 {
 	swap(mRoot, rhs.mRoot);
 }
@@ -19,7 +21,7 @@ ImageAtlas& ImageAtlas::operator=(ImageAtlas &&rhs)
 }
 
 ImageAtlas::ImageAtlas(std::uint32_t width, uint32_t height, Format format, const vector<uint8_t> &bytes)
-	: Image{ width, height, format, bytes }, mRoot{ make_unique<Node>() }
+	: Image(width, height, format, bytes), mRoot{ make_unique<Node>() }
 {
 	mRoot->mRect.x = 0;
 	mRoot->mRect.y = 0;
@@ -28,7 +30,7 @@ ImageAtlas::ImageAtlas(std::uint32_t width, uint32_t height, Format format, cons
 }
 
 ImageAtlas::ImageAtlas(uint32_t width, uint32_t height, Format format, vector<uint8_t> &&bytes)
-	: Image{ width, height, format, move(bytes) }, mRoot{ make_unique<Node>() }
+	: Image(width, height, format, move(bytes)), mRoot{ make_unique<Node>() }
 {
 	mRoot->mRect.x = 0;
 	mRoot->mRect.y = 0;
@@ -37,7 +39,7 @@ ImageAtlas::ImageAtlas(uint32_t width, uint32_t height, Format format, vector<ui
 }
 
 ImageAtlas::ImageAtlas(uint32_t width, uint32_t height, Format format)
-	: Image{ width, height, format }, mRoot{ make_unique<Node>() }
+	: Image(width, height, format), mRoot{ make_unique<Node>() }
 {
 	mRoot->mRect.x = 0;
 	mRoot->mRect.y = 0;
