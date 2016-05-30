@@ -1,14 +1,16 @@
 #ifndef VERTEX_ARRAY_HPP
 #define VERTEX_ARRAY_HPP
 #include "Prerequisites.hpp"
-#include "GpuResource.hpp"
+#include "ResourceManager.hpp"
+#include "GpuObject.hpp"
 
 class VertexLayout;
 class Renderer;
+class GpuBuffer;
 template <typename T>
 class VertexBuffer;
 
-class VertexArray : public GpuResource
+class VertexArray : public GpuObject
 {
 public:
 	VertexArray();
@@ -20,39 +22,45 @@ public:
 	VertexArray& operator=(VertexArray &&rhs);
 	
 	template <typename T>
-	VertexArray(VertexBuffer<T> &buffer, Renderer &renderer);
+	VertexArray(std::shared_ptr<VertexBuffer<T>> buffer, Renderer &renderer);
 	template <typename T>
-	void create(VertexBuffer<T> &buffer, Renderer &renderer);
+	void create(std::shared_ptr<VertexBuffer<T>> buffer, Renderer &renderer);
 
 	~VertexArray();
 	void clear();
 
 private:
-	
+	std::shared_ptr<GpuBuffer> mBuffer;
 };
 
-template<typename T>
-inline VertexArray::VertexArray(VertexBuffer<T> &buffer, Renderer &renderer)
+
+template <typename T>
+VertexArray::VertexArray(std::shared_ptr<VertexBuffer<T>> buffer, Renderer &renderer)
 {
-	create(buffer, renderer);
+	create(layout, buffer, renderer);
 }
 
-template<typename T>
-inline void VertexArray::create(VertexBuffer<T> &buffer, Renderer &renderer)
+template <typename T>
+void VertexArray::create(std::shared_ptr<VertexBuffer<T>> buffer, Renderer &renderer)
 {
-	static_assert(std::is_base_of<VertexLayout, T>(), "VertexArray must operate on VertexLayout");
+	mBuffer = std::dynamic_pointer_cast<GpuBuffer>(buffer);
 
 	gl::GenVertexArrays(1, &mID);
-
+	T layout;
 	renderer.bindVertexArray(*this);
-	renderer.bindVertexBuffer(buffer);
-
+	renderer.bindBuffer(*buffer);
 	std::uint32_t i = 0;
-	for (auto it : T::GetAttrib())
+
+	for (auto it : layout.getFormat())
 	{
-		gl::EnableVertexAttribArray(i);
-		gl::VertexAttribPointer(i, it.size, it.type, it.normalized, it.stride,
-			reinterpret_cast<void *>(it.pointer));
+		if (it.empty)
+			gl::DisableVertexAttribArray(i);
+		else
+		{
+			gl::EnableVertexAttribArray(i);
+			gl::VertexAttribPointer(i, it.size, it.type, it.normalized, it.stride,
+				reinterpret_cast<void *>(it.pointer));
+		}
 
 		i++;
 	}

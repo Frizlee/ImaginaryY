@@ -3,12 +3,11 @@
 using namespace std;
 
 Texture::Texture()
-	: GpuResource()
 {
 }
 
 Texture::Texture(Texture &&rhs)
-	: GpuResource(move(rhs))
+	: GpuObject(move(rhs))
 {
 	swap(mFormat, rhs.mFormat);
 	swap(mType, rhs.mType);
@@ -16,20 +15,18 @@ Texture::Texture(Texture &&rhs)
 
 Texture& Texture::operator=(Texture &&rhs)
 {
-	GpuResource::operator=(move(rhs));
+	GpuObject::operator=(move(rhs));
 	swap(mFormat, rhs.mFormat);
 	swap(mType, rhs.mType);
 	return *this;
 }
 
 Texture::Texture(const Image &img, Renderer &renderer)
-	: GpuResource()
 {
 	create(img, renderer);
 }
 
 Texture::Texture(std::vector<Image*> &&imgs, Renderer &renderer)
-	: GpuResource()
 {
 	create(move(imgs), renderer);
 }

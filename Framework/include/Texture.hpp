@@ -1,10 +1,10 @@
 #ifndef TEXTURE_HPP
 #define TEXTURE_HPP
 #include "Prerequisites.hpp"
-#include "GpuResource.hpp"
+#include "GpuObject.hpp"
 #include "Image.hpp"
 
-class Texture : public GpuResource
+class Texture : public GpuObject
 {
 public:
 	enum class Type

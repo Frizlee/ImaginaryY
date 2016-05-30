@@ -3,15 +3,17 @@
 #include "Prerequisites.hpp"
 #include "gl_core_3_3.hpp"
 
-struct VertexAttrib
+struct VertexFormat
 {
+	bool empty;
 	GLint size;
 	GLenum type;
 	GLboolean normalized;
 	GLsizei stride;
 	std::uint32_t pointer;
 
-	VertexAttrib(GLint size, GLenum type, GLboolean normalized, GLsizei stride, std::uint32_t pointer);
+	VertexFormat();
+	VertexFormat(GLint size, GLenum type, GLboolean normalized, GLsizei stride, std::uint32_t pointer);
 };
 
 class VertexLayout
@@ -20,8 +22,10 @@ public:
 	VertexLayout();
 	virtual ~VertexLayout() = 0;
 
-protected:
+	const std::vector<VertexFormat>& getFormat();
 
+protected:
+	std::vector<VertexFormat> mFormat;
 private:
 };
 
@@ -40,10 +44,8 @@ public:
 	~TextVertexLayout();
 
 	static std::uint32_t Size();
-	static const std::vector<VertexAttrib>& GetAttrib();
 
 private:
-	static std::vector<VertexAttrib> mAttrib;
 };
 
 class TextureVertexLayout : public VertexLayout
@@ -61,10 +63,27 @@ public:
 	~TextureVertexLayout();
 
 	static std::uint32_t Size();
-	static const std::vector<VertexAttrib>& GetAttrib();
 
 private:
-	static std::vector<VertexAttrib> mAttrib;
+};
+
+class ColorVertexLayout : public VertexLayout
+{
+public:
+	struct Data
+	{
+		float x, y, z;
+		std::uint32_t color;
+
+		Data(float x, float y, float z, std::uint32_t color);
+	};
+
+	ColorVertexLayout();
+	~ColorVertexLayout();
+
+	static std::uint32_t Size();
+
+private:
 };
 
 #endif // VERTEX_LAYOUT_HPP

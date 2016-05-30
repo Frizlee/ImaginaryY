@@ -138,7 +138,8 @@
     <ClInclude Include="include\Entity.hpp" />
     <ClInclude Include="include\Font.hpp" />
     <ClInclude Include="include\gl_core_3_3.hpp" />
-    <ClInclude Include="include\GpuResource.hpp" />
+    <ClInclude Include="include\GpuBuffer.hpp" />
+    <ClInclude Include="include\GpuObject.hpp" />
     <ClInclude Include="include\Guid.hpp" />
     <ClInclude Include="include\Image.hpp" />
     <ClInclude Include="include\ImageAtlas.hpp" />
@@ -161,7 +162,8 @@
     <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\Font.cpp" />
     <ClCompile Include="src\gl_core_3_3.cpp" />
-    <ClCompile Include="src\GpuResource.cpp" />
+    <ClCompile Include="src\GpuBuffer.cpp" />
+    <ClCompile Include="src\GpuObject.cpp" />
     <ClCompile Include="src\Guid.cpp" />
     <ClCompile Include="src\Image.cpp" />
     <ClCompile Include="src\ImageAtlas.cpp" />

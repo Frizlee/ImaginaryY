@@ -43,12 +43,43 @@ void Renderer::bindTexture(Texture &tex, int32_t slot)
 	}
 
 	gl::ActiveTexture(gl::TEXTURE0 + slot);
-	gl::BindTexture(target, tex.mID);
+	gl::BindTexture(target, tex.getID());
 }
 
 void Renderer::bindVertexArray(VertexArray &arr)
 {
 	gl::BindVertexArray(arr.getID());
+}
+
+void Renderer::bindBuffer(GpuBuffer &buf)
+{
+	GpuBufferType t = buf.getType();
+	bindBuffer(buf, t);
+}
+
+void Renderer::bindBuffer(GpuBuffer &buf, GpuBufferType &type)
+{
+	GLenum target;
+
+	switch (type)
+	{
+	case GpuBufferType::VERTEX_BUFFER:
+		target = gl::ARRAY_BUFFER;
+		break;
+
+	case GpuBufferType::COPY_READ_BUFFER:
+		target = gl::COPY_READ_BUFFER;
+		break;
+
+	case GpuBufferType::COPY_WRITE_BUFFER:
+		target = gl::COPY_WRITE_BUFFER;
+		break;
+
+	default:
+		return;
+	}
+
+	gl::BindBuffer(target, buf.getID());
 }
 
 void Renderer::setDepthTest(bool state)

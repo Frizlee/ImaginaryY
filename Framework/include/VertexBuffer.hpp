@@ -1,14 +1,16 @@
 #ifndef VERTEX_BUFFER_HPP
 #define VERTEX_BUFFER_HPP
 #include "Prerequisites.hpp"
-#include "GpuResource.hpp"
+#include "GpuBuffer.hpp"
 #include "VertexLayout.hpp"
 #include "Renderer.hpp"
 
 template <typename T>
-class VertexBuffer : public GpuResource
+class VertexBuffer : public GpuBuffer
 {
 public:
+	typedef T Layout;
+
 	VertexBuffer();
 
 	VertexBuffer<T>(const VertexBuffer<T> &lhs) = delete;
@@ -31,14 +33,14 @@ private:
 
 template<typename T>
 inline VertexBuffer<T>::VertexBuffer()
-	: mPosition{ 0 }
+	: GpuBuffer(GpuBufferType::VERTEX_BUFFER), mPosition{ 0 }
 {
 	static_assert(std::is_base_of<VertexLayout, T>(), "VertexBuffer must operate on VertexLayout");
 }
 
 template<typename T>
 inline VertexBuffer<T>::VertexBuffer(VertexBuffer<T> &&rhs)
-	: GpuResource(move(rhs))
+	: GpuBuffer(move(rhs))
 {
 	swap(mPosition, rhs.mPosition);
 }
@@ -46,24 +48,24 @@ inline VertexBuffer<T>::VertexBuffer(VertexBuffer<T> &&rhs)
 template<typename T>
 inline VertexBuffer<T>& VertexBuffer<T>::operator=(VertexBuffer<T> &&rhs)
 {
-	GpuResource::operator=(move(rhs));
+	GpuBuffer::operator=(move(rhs));
 	swap(mPosition, rhs.mPosition);
 	return *this;
 }
 
 template<typename T>
 inline VertexBuffer<T>::VertexBuffer(std::uint32_t size, Renderer &renderer)
-	: GpuResource(), mPosition{ 0 }
+	: GpuBuffer(GpuBufferType::VERTEX_BUFFER), mPosition{ 0 }
 {
 	static_assert(std::is_base_of<VertexLayout, T>(), "VertexBuffer must operate on VertexLayout");
-	create(size);
+	create(size, renderer);
 }
 
 template<typename T>
 inline void VertexBuffer<T>::create(std::uint32_t size, Renderer &renderer)
 {
 	gl::GenBuffers(1, &mID);
-	renderer.bindVertexBuffer(*this);
+	renderer.bindBuffer(*this);
 	gl::BufferData(gl::ARRAY_BUFFER, size * T::Size(), nullptr, gl::DYNAMIC_DRAW);
 }
 
@@ -84,7 +86,7 @@ inline std::uint32_t VertexBuffer<T>::add(const std::vector<typename T::Data> &l
 {
 	std::uint32_t currentPos = mPosition;
 
-	renderer.bindVertexBuffer(*this);
+	renderer.bindBuffer(*this);
 	gl::BufferSubData(gl::ARRAY_BUFFER, mPosition, lhsData.size() * T::Size(), lhsData.data());
 	mPosition += lhsData.size() * T::Size();
 
@@ -92,11 +94,11 @@ inline std::uint32_t VertexBuffer<T>::add(const std::vector<typename T::Data> &l
 }
 
 template<typename T>
-inline std::uint32_t VertexBuffer<T>::add(std::vector<typename T::Data> &&rhsData, Renderer & renderer)
+inline std::uint32_t VertexBuffer<T>::add(std::vector<typename T::Data> &&rhsData, Renderer &renderer)
 {
 	std::uint32_t currentPos = mPosition;
 
-	renderer.bindVertexBuffer(*this);
+	renderer.bindBuffer(*this);
 	gl::BufferSubData(gl::ARRAY_BUFFER, mPosition, rhsData.size() * T::Size(), rhsData.data());
 	mPosition += rhsData.size() * T::Size();
 

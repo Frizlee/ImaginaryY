@@ -1,4 +1,7 @@
-#include "..\include\VertexArray.hpp"
+#include "../include/VertexArray.hpp"
+#include "../include/VertexLayout.hpp"
+#include "../include/GpuBuffer.hpp"
+#include "../include/Renderer.hpp"
 using namespace std;
 
 VertexArray::VertexArray()
@@ -6,13 +9,13 @@ VertexArray::VertexArray()
 }
 
 VertexArray::VertexArray(VertexArray &&rhs)
-	: GpuResource(move(rhs))
+	: GpuObject(move(rhs))
 {
 }
 
 VertexArray& VertexArray::operator=(VertexArray &&rhs)
 {
-	GpuResource::operator=(move(rhs));
+	GpuObject::operator=(move(rhs));
 
 	return *this;
 }

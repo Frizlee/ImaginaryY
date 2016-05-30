@@ -43,10 +43,13 @@ private:
 	Text mSimpleText;
 	Text mPlayerHP;
 	Text mEnemyHP;
-	VertexBuffer<TextVertexLayout> mTextBuffer;
+	
+	std::shared_ptr<VertexBuffer<TextVertexLayout>> mTextBuffer;
 	VertexArray mTextArray;
-	VertexBuffer<TextureVertexLayout> mTextureBuffer;
 	VertexArray mTextureArray;
+	VertexArray mColorArray;
+	VertexArray mFullScreenQuadArray;
+	VertexArray mGizmoArray;
 	std::uint32_t mInfoDisplay;
 	std::uint32_t mPlayerDisplay;
 	std::uint32_t mEnemyDisplay;
@@ -74,10 +77,6 @@ private:
 	glm::mat4 mProjMatrix;
 	glm::vec3 mCameraPos;
 
-	GLuint mColoredVao;
-
-	GLuint mGizmoVao;
-	GLuint mFullscreenQuadVao;
 	void setupGizmo();
 	void setupFullscreenQuad();
 };

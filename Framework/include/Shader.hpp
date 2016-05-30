@@ -1,9 +1,9 @@
 #ifndef SHADER_HPP
 #define SHADER_HPP
 #include "Prerequisites.hpp"
-#include "GpuResource.hpp"
+#include "GpuObject.hpp"
 
-class Shader : public GpuResource
+class Shader : public GpuObject
 {
 	friend class Renderer;
 

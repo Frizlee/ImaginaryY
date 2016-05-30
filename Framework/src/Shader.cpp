@@ -2,23 +2,21 @@
 using namespace std;
 
 Shader::Shader()
-	: GpuResource()
 {
 }
 
 Shader::Shader(Shader &&rhs)
-	: GpuResource(move(rhs))
+	: GpuObject(move(rhs))
 {
 }
 
 Shader& Shader::operator=(Shader &&rhs)
 {
-	GpuResource::operator=(move(rhs));
+	GpuObject::operator=(move(rhs));
 	return *this;
 }
 
 Shader::Shader(std::string vertexShader, std::string fragmentShader)
-	: GpuResource()
 {
 	create(vertexShader, fragmentShader);
 }

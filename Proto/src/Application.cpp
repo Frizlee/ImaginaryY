@@ -23,6 +23,15 @@ using namespace std;
 // camera move rectangle
 #define RECT_X_L -5.0f 
 #define RECT_X_R 5.0f
+#define GL_CHECK {							\
+GLenum e;									\
+if ((e = gl::GetError()) != gl::NO_ERROR_)	\
+cout << "glGetError: " << e << endl;		\
+}
+
+
+typedef TextureVertexLayout::Data TVLData;
+typedef ColorVertexLayout::Data CVLData;
 
 #pragma pack(push)
 struct VertexColor
@@ -32,15 +41,6 @@ struct VertexColor
 
 	VertexColor(float x, float y, float z, float r, float g, float b, float a) :
 		x{ x }, y{ y }, z{ z }, r{ r }, g{ g }, b{ b }, a{ a } {}
-};
-
-struct VertexTexture
-{
-	float x, y, z;
-	float u, v;
-	VertexTexture(float x, float y, float z, float u, float v) :
-		x{ x }, y{ y }, z{ z }, u{ u }, v{ v } {}
-
 };
 #pragma pack(pop)
 
@@ -99,14 +99,15 @@ void Application::run()
 
 void Application::setupGraphic()
 {
-	typedef TextureVertexLayout::Data TVLData;
+	
 
 	ifstream file;
 	Image img;
 	string vertexShader, fragmentShader;
-	GLuint coloredVbo, texturedVbo;
-	vector<VertexColor> bufferColor;
-	vector<TVLData> bufferTexture;
+	vector<CVLData> buffer1;
+	vector<TVLData> buffer2;
+	shared_ptr<VertexBuffer<TextureVertexLayout>> textureBuffer;
+	shared_ptr<VertexBuffer<ColorVertexLayout>> colorBuffer;
 
 	gl::ClearColor(0.1875f, 0.8359375f, 0.78125f, 1.0f);
 	gl::Viewport(0, 0, WIDTH, HEIGHT);
@@ -115,9 +116,9 @@ void Application::setupGraphic()
 	gl::BlendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA);
 
 	// Fill up buffers
-	// bufferColor.assign({});
+	// buffer1.assign({});
 
-	bufferTexture.assign({
+	buffer2.assign({
 		// Background
 		TVLData{ -15.0f, -6.0f, 0.0f, 0.0f, 0.0f },
 		TVLData{ -15.0f, 6.0f, 0.0f, 0.0f, 1.0f },
@@ -180,44 +181,21 @@ void Application::setupGraphic()
 	mShaderText.create(vertexShader, fragmentShader);
 
 	// Create color vao
-	gl::GenVertexArrays(1, &mColoredVao);
-	gl::GenBuffers(1, &coloredVbo);
-	gl::BindVertexArray(mColoredVao);
-	gl::BindBuffer(gl::ARRAY_BUFFER, coloredVbo);
-	gl::EnableVertexAttribArray(0);
-	gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE_, sizeof(VertexColor), 0);
-	gl::EnableVertexAttribArray(1);
-	gl::VertexAttribPointer(1, 4, gl::FLOAT, gl::FALSE_, sizeof(VertexColor), 
-		(GLvoid*)(3 * sizeof(float)));
-	gl::BindVertexArray(0);
+	colorBuffer = make_shared<VertexBuffer<ColorVertexLayout>>(buffer1.size() * ColorVertexLayout::Size(), mRenderer);
+	mColorArray.create(colorBuffer, mRenderer);
 
 	// Create texture vao
-	/*gl::GenVertexArrays(1, &mTexturedVao);
-	gl::GenBuffers(1, &texturedVbo);
-	gl::BindVertexArray(mTexturedVao);
-	gl::BindBuffer(gl::ARRAY_BUFFER, texturedVbo);
-	gl::EnableVertexAttribArray(0);
-	gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE_, sizeof(VertexTexture), 0);
-	gl::EnableVertexAttribArray(1);
-	gl::VertexAttribPointer(1, 2, gl::FLOAT, gl::FALSE_, sizeof(VertexTexture), 
-		(GLvoid*)(3 * sizeof(float)));*/
-	mTextureBuffer.create(bufferTexture.size() * TextureVertexLayout::Size(), mRenderer);
-	mTextureArray.create(mTextureBuffer, mRenderer);
+	textureBuffer = make_shared<VertexBuffer<TextureVertexLayout>>(buffer2.size() * TextureVertexLayout::Size(), 
+		mRenderer);
+	mTextureArray.create(textureBuffer, mRenderer);
 	
 	// Create text vao
-	mTextBuffer.create(1024 * 1024, mRenderer);
+	mTextBuffer = make_shared<VertexBuffer<TextVertexLayout>>(1024 * 1024, mRenderer);
 	mTextArray.create(mTextBuffer, mRenderer);
 
 	// Send data
-	gl::BindBuffer(gl::ARRAY_BUFFER, coloredVbo);
-	gl::BufferData(gl::ARRAY_BUFFER, bufferColor.size() * sizeof(VertexColor),
-		bufferColor.data(), gl::STATIC_DRAW);
-
-	// gl::BindBuffer(gl::ARRAY_BUFFER, texturedVbo);
-	// gl::BufferData(gl::ARRAY_BUFFER, bufferTexture.size() * sizeof(VertexTexture),
-	// 	bufferTexture.data(), gl::STATIC_DRAW);
-
-	mTextureBuffer.add(bufferTexture, mRenderer);
+	colorBuffer->add(buffer1, mRenderer);
+	textureBuffer->add(buffer2, mRenderer);	
 
 	// Load textures;
 	file.open("image.png", ios_base::binary);
@@ -334,10 +312,10 @@ void Application::calculateLogic(double deltaTime)
 	infoDisplay << "EnemyZ: " << mEnemy.getPos().z << endl;
 
 	mSimpleText.create(infoDisplay.str(), mComicSansFont);
-	mTextBuffer.clear();
-	mInfoDisplay = mTextBuffer.add(mSimpleText.getBuffer(), mRenderer);
-	mPlayerDisplay = mTextBuffer.add(mPlayerHP.getBuffer(), mRenderer);
-	mEnemyDisplay = mTextBuffer.add(mEnemyHP.getBuffer(), mRenderer);
+	mTextBuffer->clear();
+	mInfoDisplay = mTextBuffer->add(mSimpleText.getBuffer(), mRenderer);
+	mPlayerDisplay = mTextBuffer->add(mPlayerHP.getBuffer(), mRenderer);
+	mEnemyDisplay = mTextBuffer->add(mEnemyHP.getBuffer(), mRenderer);
 }
 
 void Application::renderScene()
@@ -355,21 +333,23 @@ void Application::renderScene()
 	// Render colored
 	mRenderer.bindShader(mShaderColor);
 
-	gl::BindVertexArray(mGizmoVao);
+	mRenderer.bindVertexArray(mGizmoArray);
+	
 	gl::UniformMatrix4fv(matrixLocationColor, 1, gl::FALSE_,
 		&(mProjMatrix * mViewMatrix * glm::translate(mPlayer.getPos()))[0][0]);
+	
 	gl::DrawArrays(gl::LINES, 0, 6);
 
 	// Render texutred
 	mRenderer.bindShader(mShaderTexture);
 
+	mRenderer.bindVertexArray(mTextureArray);
+	
 	gl::Uniform2fv(animKeyLocationTexture, 1, &glm::vec2(0.0f, 0.0f)[0]);
 	gl::UniformMatrix4fv(matrixLocationTexture, 1, gl::FALSE_, &(mProjMatrix * mViewMatrix)[0][0]);
 	gl::Uniform1i(samplerLocationTexture, 0);
 	gl::BindSampler(0, mSampler);
-	// gl::BindVertexArray(mTexturedVao);
-	mRenderer.bindVertexArray(mTextureArray);
-
+	
 	mRenderer.bindTexture(mParalaxBackgroundTex, 0);
 	gl::DrawArrays(gl::TRIANGLES, 6, 6);
 
@@ -378,10 +358,11 @@ void Application::renderScene()
 
 	mRenderer.bindTexture(mRampTex, 0);
 	gl::DrawArrays(gl::TRIANGLES, 12, 6);
-
+	
 	// Enemy
 	gl::UniformMatrix4fv(matrixLocationTexture, 1, gl::FALSE_,
 		&(mProjMatrix * mViewMatrix * glm::translate(mEnemy.getPos()))[0][0]);
+	
 	mRenderer.bindTexture(mPlayerAnimTex, 0);
 	gl::DrawArrays(gl::TRIANGLES, 18, 6);
 
@@ -389,22 +370,26 @@ void Application::renderScene()
 	gl::Uniform2fv(animKeyLocationTexture, 1, &mPlayer.getAnimKey()[0]);
 	gl::UniformMatrix4fv(matrixLocationTexture, 1, gl::FALSE_,
 		&(mProjMatrix * mViewMatrix * glm::translate(mPlayer.getPos()))[0][0]);
+	
 	mRenderer.bindTexture(mPlayerAnimTex, 0);
 	//mRenderer.bindTexture(mTestTex, 0);
 	gl::DrawArrays(gl::TRIANGLES, 18, 6);
 	
+	mRenderer.bindVertexArray(mFullScreenQuadArray);
+	gl::DrawArrays(gl::TRIANGLES, 0, 6);
+
 	// Render text
 	mRenderer.bindShader(mShaderText);
+
+	mRenderer.bindVertexArray(mTextArray);
 
 	gl::Uniform4fv(colorLocationText, 1, &glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)[0]);
 	gl::UniformMatrix4fv(orthoMatrixLocationText, 1, gl::FALSE_,
 		&(mOrthoMatrix * glm::translate(glm::vec3(0.0f, static_cast<float>(HEIGHT), 0.0f)))[0][0]);
-	
 	// gl::UniformMatrix4fv(orthoMatrixLocationText, 1, gl::FALSE_, &glm::mat4()[0][0]);
 	gl::Uniform1i(samplerLocationText, 0);
 	gl::BindSampler(0, mSampler);
-	mRenderer.bindVertexArray(mTextArray);
-
+	
 	mRenderer.bindTexture(mFontTex, 0);
 	gl::DrawArrays(gl::TRIANGLES, mInfoDisplay / TextVertexLayout::Size(), 
 		mSimpleText.getBuffer().size());
@@ -420,9 +405,9 @@ void Application::renderScene()
 
 	gl::UniformMatrix4fv(orthoMatrixLocationText, 1, gl::FALSE_,
 		&(mOrthoMatrix * glm::translate(glm::vec3(transVec)))[0][0]);
+	
 	gl::DrawArrays(gl::TRIANGLES, mPlayerDisplay / TextVertexLayout::Size(), 
 		mPlayerHP.getBuffer().size());
-
 
 	// Calculate Enemy pos on 2d space
 	transVec = mProjMatrix * mViewMatrix * glm::vec4(mEnemy.getPos(), 1.0f);
@@ -435,73 +420,50 @@ void Application::renderScene()
 
 	gl::UniformMatrix4fv(orthoMatrixLocationText, 1, gl::FALSE_,
 	 	&(mOrthoMatrix * glm::translate(glm::vec3(transVec)))[0][0]);
+	
 	gl::DrawArrays(gl::TRIANGLES, mEnemyDisplay / TextVertexLayout::Size(), 
 		mEnemyHP.getBuffer().size());
 
 	glfwSwapBuffers(mWnd);
 
-	GLenum e;
-
-	if ((e = gl::GetError()) != gl::NO_ERROR_)
-		cout << "glGetError: " << e << endl;
+	GL_CHECK;
 }
 
 void Application::setupGizmo()
 {
-	vector<VertexColor> buffer;
-	GLuint vbo;
-
-	gl::GenVertexArrays(1, &mGizmoVao);
-	gl::GenBuffers(1, &vbo);
-	gl::BindVertexArray(mGizmoVao);
-	gl::BindBuffer(gl::ARRAY_BUFFER, vbo);
-	gl::EnableVertexAttribArray(0);
-	gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE_, sizeof(VertexColor), 0);
-	gl::EnableVertexAttribArray(1);
-	gl::VertexAttribPointer(1, 4, gl::FLOAT, gl::FALSE_, sizeof(VertexColor), (GLvoid*)(3 * sizeof(float)));
+	vector<CVLData> buffer;
+	shared_ptr<VertexBuffer<ColorVertexLayout>> vbo;
 
 	// Fill up buffer
 	buffer.assign({
-		VertexColor{ 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f },
-		VertexColor{ 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f },
-		VertexColor{ 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f },
-		VertexColor{ 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f },
-		VertexColor{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f },
-		VertexColor{ 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f },
+		CVLData{ 0.0f, 0.0f, 0.0f, 0xff0000ff },
+		CVLData{ 1.0f, 0.0f, 0.0f, 0xff0000ff },
+		CVLData{ 0.0f, 0.0f, 0.0f, 0x00ff00ff },
+		CVLData{ 0.0f, 1.0f, 0.0f, 0x00ff00ff },
+		CVLData{ 0.0f, 0.0f, 0.0f, 0x0000ffff },
+		CVLData{ 0.0f, 0.0f, 1.0f, 0x0000ffff },
 	});
 
-	gl::BufferData(gl::ARRAY_BUFFER, buffer.size() * sizeof(VertexColor), buffer.data(), gl::STATIC_DRAW);
-
-	gl::BindVertexArray(0);
+	vbo = make_shared<VertexBuffer<ColorVertexLayout>>(buffer.size() * ColorVertexLayout::Size(), mRenderer);
+	mGizmoArray.create(vbo, mRenderer);
 }
 
 void Application::setupFullscreenQuad()
 {
-	vector<VertexTexture> buffer;
-
-	GLuint vbo;
-
-	gl::GenVertexArrays(1, &mFullscreenQuadVao);
-	gl::GenBuffers(1, &vbo);
-	gl::BindVertexArray(mFullscreenQuadVao);
-	gl::BindBuffer(gl::ARRAY_BUFFER, vbo);
-	gl::EnableVertexAttribArray(0);
-	gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE_, sizeof(VertexTexture), 0);
-	gl::EnableVertexAttribArray(1);
-	gl::VertexAttribPointer(1, 2, gl::FLOAT, gl::FALSE_, sizeof(VertexTexture), (GLvoid*)(3 * sizeof(float)));
+	vector<TVLData> bufferData;
+	shared_ptr<VertexBuffer<TextureVertexLayout>> vbo;
 
 	// Fill up buffer
-	buffer.assign({
-		VertexTexture{ -1.0f, -1.0f, 0.0f, 0.0f, 0.0f },
-		VertexTexture{ -1.0f, 1.0f, 0.0f, 0.0f, 1.0f },
-		VertexTexture{ 1.0f, 1.0f, 0.0f, 1.0f, 1.0f },
-		VertexTexture{ 1.0f, 1.0f, 0.0f, 1.0f, 1.0f },
-		VertexTexture{ 1.0f, -1.0f, 0.0f, 1.0f, 0.0f },
-		VertexTexture{ -1.0f, -1.0f, 0.0f, 0.0f, 0.0f },
+	bufferData.assign({
+		TVLData{ -1.0f, -1.0f, 0.0f, 0.0f, 0.0f },
+		TVLData{ -1.0f, 1.0f, 0.0f, 0.0f, 1.0f },
+		TVLData{ 1.0f, 1.0f, 0.0f, 1.0f, 1.0f },
+		TVLData{ 1.0f, 1.0f, 0.0f, 1.0f, 1.0f },
+		TVLData{ 1.0f, -1.0f, 0.0f, 1.0f, 0.0f },
+		TVLData{ -1.0f, -1.0f, 0.0f, 0.0f, 0.0f },
 	});
 
-	gl::BufferData(gl::ARRAY_BUFFER, buffer.size() * sizeof(VertexColor), buffer.data(), gl::STATIC_DRAW);
-
-	gl::BindVertexArray(0);
+	vbo = make_shared<VertexBuffer<TextureVertexLayout>>(bufferData.size() * TextureVertexLayout::Size(), mRenderer);
+	mFullScreenQuadArray.create(vbo, mRenderer);
 }
 

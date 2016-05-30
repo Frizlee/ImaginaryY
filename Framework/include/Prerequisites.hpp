@@ -4,6 +4,7 @@
 // Include standart headers
 #include <type_traits>
 #include <cstdint>
+#include <cstddef>
 #include <algorithm>
 #include <iostream>
 #include <memory>

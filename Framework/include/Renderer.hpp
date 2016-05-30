@@ -6,8 +6,8 @@
 class Shader;
 class Texture;
 class VertexArray;
-template <typename T>
-class VertexBuffer;
+class GpuBuffer;
+enum class GpuBufferType;
 
 class Renderer
 {
@@ -20,8 +20,8 @@ public:
 	void bindShader(Shader &shr);
 	void bindTexture(Texture &tex, std::int32_t slot);
 	void bindVertexArray(VertexArray &arr);
-	template <typename T>
-	void bindVertexBuffer(VertexBuffer<T> &buf);
+	void bindBuffer(GpuBuffer &buf);
+	void bindBuffer(GpuBuffer &buf, GpuBufferType &type);
 	void setDepthTest(bool state);
 
 	bool isInitialized() const;
@@ -29,12 +29,6 @@ public:
 private:
 	bool mInitialized;
 };
-
-template<typename T>
-inline void Renderer::bindVertexBuffer(VertexBuffer<T> &buf)
-{
-	gl::BindBuffer(gl::ARRAY_BUFFER, buf.getID());
-}
 
 #endif // RENDERER_HPP
 
